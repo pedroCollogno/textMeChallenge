@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Kart
+from .models import User, Kart, Booking
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,4 +9,9 @@ class UserSerializer(serializers.ModelSerializer):
 class KartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Kart
-        fields = ('id', 'typeName', 'hourly_price')
+        fields = ('id', 'type_name', 'hourly_price')
+
+class BookingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Booking
+        fields = ('id', 'user', 'kart', "beginning_time", "end_time")

@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+import datetime
 
 class User(models.Model) :
     email = models.CharField(max_length=100)
@@ -18,18 +19,21 @@ class User(models.Model) :
     def credit(self, amount) :
         self.balance += amount
 
-    def encodePassword(self, password) :
+    def encode_password(self, password) :
         return password[:4]
 
-    def setPassword(self, password) :
-        self.password = self.encodePassword(password)
+    def set_password(self, password) :
+        self.password = self.encode_password(password)
     
-    def checkPassword(self, password) :
-        return self.encodePassword(password) == self.password
+    def check_password(self, password) :
+        return self.encode_password(password) == self.password
 
     def save(self, *args, **kwargs) :
-        self.setPassword(self.password)
+        self.set_password(self.password)
         super(User, self).save(*args, **kwargs)
+
+
+HOURLY_PRICES = {"S" : 10, "CC" : 15, "BF" : 25}
 
 class Kart(models.Model) :
     TYPE_NAMES = (
@@ -37,11 +41,35 @@ class Kart(models.Model) :
         ("CC", "Cat Cruiser"),
         ("BF", "Blue Falcon")
     )
-    typeName = models.CharField(max_length=50, choices=TYPE_NAMES)
-    hourly_price = models.IntegerField()
+    type_name = models.CharField(max_length=50, choices=TYPE_NAMES)
+    hourly_price = models.IntegerField(default=10)
+
+    def save(self, *args, **kwargs) :
+        self.hourly_price = HOURLY_PRICES[self.type_name]
+        super(Kart, self).save(*args, **kwargs)
 
 class Booking(models.Model) :
     kart = models.ForeignKey(Kart, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    beginning_date = models.DateField()
-    end_date = models.DateField()
+    beginning_time = models.DateTimeField(default = datetime.datetime(2018, 1, 1, 0))
+    end_time = models.DateTimeField(default = datetime.datetime(2018, 1, 1, 1))
+
+    def set_end_time(self) :
+        y, m, d, end_hour = self.beginning_time.year, self.beginning_time.month, self.beginning_time.day, self.beginning_time.hour + 1
+        if end_hour == 24 : 
+            end_hour = 0
+            d += 1
+        if d == 31 :
+            d = 1
+            m += 1
+        if m == 13 :
+            m = 1
+            y += 1
+        end_time = datetime.datetime(y, m, d, end_hour)
+        self.end_time = end_time
+
+    def save(self, *args, **kwargs) :
+        self.set_end_time()
+        self.kart = Kart.objects.get(id=self.kart.id)
+        self.user = User.objects.get(id=self.user.id)
+        super(Booking, self).save(*args, **kwargs)
