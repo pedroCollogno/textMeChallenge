@@ -15,9 +15,11 @@ class User(models.Model) :
     def spend(self, amount) :
         if amount <= self.balance :
             self.balance -= amount
+        self.save()
 
     def credit(self, amount) :
         self.balance += amount
+        self.save()
 
     def encode_password(self, password) :
         return password[:4]
@@ -72,4 +74,5 @@ class Booking(models.Model) :
         self.set_end_time()
         self.kart = Kart.objects.get(id=self.kart.id)
         self.user = User.objects.get(id=self.user.id)
+        self.user.spend(self.kart.hourly_price)
         super(Booking, self).save(*args, **kwargs)
