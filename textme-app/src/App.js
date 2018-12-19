@@ -1,25 +1,27 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import Navbar from "./components/Navbar/Navbar"
+
 import './App.css';
 
 class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      loggedIn: false,
+      user: {}
+    }
+    this.authenticate = this.authenticate.bind(this);
+  }
+
+  authenticate(user_infos) {
+    this.setState({ loggedIn: true, user: user_infos });
+  }
+
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        <Navbar loggedIn={this.state.loggedIn} authenticate={this.authenticate} user={this.state.user} />
+        {this.state.loggedIn && <p>User is {this.state.user.id}</p>}
       </div>
     );
   }

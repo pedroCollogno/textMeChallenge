@@ -14,19 +14,24 @@ import datetime
 def log_in(request) :
     if request.method == "POST" :
         data = JSONParser().parse(request)
+        print(data)
         serializer = UserSerializer(data = data)
         if serializer.is_valid() :
             try :
                 user = User.objects.get(email = data["email"])
             except User.DoesNotExist :
                 return HttpResponse("This account doesn't exist")
-            return HttpResponse(user.checkPassword(data["password"]))
+            if user.check_password(data["password"]) :
+                serializer = UserSerializer(user)
+                return JsonResponse(serializer.data)
+            return HttpResponse("Wrong password")
         return JsonResponse(serializer.errors, status = 400)
 
 @csrf_exempt
 def register_user(request) :
     if request.method == "POST" :
         data = JSONParser().parse(request)
+        print(data)
         serializer = UserSerializer(data = data)
         if serializer.is_valid() :
             try :
@@ -71,10 +76,10 @@ def user_balance(request, user_id) :
     
 
 @csrf_exempt
-def reserved_karts(request) :
+def booked_karts(request) :
     if request.method == "POST" :
         data = JSONParser().parse(request)
-        d = datetime.datetime.strptime(data["beginning_time"], "%Y-%m-%d %H:%M")
+        d = datetime.datetime.strptime(data["beginning_time"], "%Y-%m-%d %H")
         bookings = Booking.objects.filter(beginning_time__year = d.year, beginning_time__month = d.month, beginning_time__day = d.day, beginning_time__hour = d.hour)
         serializer = BookingSerializer(bookings, many=True)
         return JsonResponse(serializer.data, status=201, safe=False)
@@ -86,7 +91,7 @@ def add_booking(request) :
         serializer = BookingSerializer(data = data)
         if serializer.is_valid() :
             try :
-                d = datetime.datetime.strptime(data["beginning_time"], "%Y-%m-%d %H:%M")
+                d = datetime.datetime.strptime(data["beginning_time"], "%Y-%m-%d %H")
                 booking = Booking.objects.get(user = data["user"], beginning_time__year = d.year, beginning_time__month = d.month, beginning_time__day = d.day, beginning_time__hour = d.hour)
                 return HttpResponse("User " + str(booking.user.id) + " has already booked kart " + str(booking.kart.id) + " for " + booking.beginning_time.__str__())
             except Booking.DoesNotExist :
