@@ -1,0 +1,7 @@
+#!/bin/bash
+
+#cd /path/to/project
+cd /Users/pierre/Documents/textme_project
+
+open ./unix_scripts/start_back 
+open ./unix_scripts/start_front

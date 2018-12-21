@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#cd /path/to/project
+cd /Users/pierre/Documents/textme_project
+source env/bin/activate
+cd backend
+# If you use a virtual environment : source env/bin/activate
+python manage.py runserver
