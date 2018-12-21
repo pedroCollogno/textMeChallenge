@@ -106,9 +106,21 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES" : [
-        "rest_framexork.permissions.DjangoModelPermissionsOrAnonReadOnly"
-    ]
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+}
+
+def custom_payload_handler(user_id) :
+    return {"payload" : user_id}
+
+JWT_AUTH = {
+    'JWT_PAYLOAD_HANDLER': custom_payload_handler
 }
 
 
