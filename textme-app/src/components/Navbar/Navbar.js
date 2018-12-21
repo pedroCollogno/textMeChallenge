@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Link, Redirect, Switch } from "react-ro
 import Karts from "../Karts/Karts";
 import Authentication from "../Authentication/Authentication";
 import Bookings from "../Bookings/Bookings";
+import Account from "../Account/Account";
 
 
 class Navbar extends Component {
@@ -10,7 +11,7 @@ class Navbar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            authText: "Log out"
+            authText: "My account"
         }
     }
 
@@ -20,7 +21,7 @@ class Navbar extends Component {
                 <div>
                     <ul>
                         <li>
-                            <Link to="/">My bookings</Link>
+                            <Link to="/bookings">My bookings</Link>
                         </li>
                         <li>
                             <Link to="/karts">Book a kart</Link>
@@ -32,16 +33,20 @@ class Navbar extends Component {
 
                     <hr />
                     <Switch>
-                        <Route exact path="/" render={() => (
+                        <Route exact path="/bookings" render={() => (
                             !this.props.loggedIn ? (<Redirect to="/auth" />
                             ) : (<Bookings user_id={this.props.user.id} />)
                         )} />
+                        <Route exact path="/account" render={() => (
+                            !this.props.loggedIn ? (<Redirect to="/auth" />
+                            ) : (<Account user={this.props.user} updateBalance={this.props.updateBalance} />)
+                        )} />
                         <Route exact path="/karts" render={() => (
                             !this.props.loggedIn ? (<Redirect to="/auth" />
-                            ) : (<Karts />)
+                            ) : (<Karts user_id={this.props.user.id} user_balance={this.props.user.balance} updateBalance={this.props.updateBalance} />)
                         )} />
                         <Route exact path="/auth" render={() => (
-                            this.props.loggedIn ? (<Redirect to="/" />
+                            this.props.loggedIn ? (<Redirect to="/account" />
                             ) : (<Authentication authenticate={this.props.authenticate} />)
                         )} />
                         <Route render={() => (

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { send_register_form, send_log_in_form } from "../../service/HttpRequests";
+import { send_register_form, send_log_in_form, setToken } from "../../service/HttpRequests";
 
 class Authentication extends Component {
     constructor(props) {
@@ -16,6 +16,7 @@ class Authentication extends Component {
         this.onSubmitLogin = this.onSubmitLogin.bind(this);
         this.onSubmitRegister = this.onSubmitRegister.bind(this);
         this.wrongPass = this.wrongPass.bind(this);
+        this.wrongMail = this.wrongMail.bind(this);
     }
 
     switchMode() {
@@ -41,24 +42,31 @@ class Authentication extends Component {
         this.setState({ wrongPassMessage: "You entered the wrong password ! Try again." })
     }
 
+    wrongMail() {
+        this.setState({ wrongPassMessage: "This account doesn't exist" })
+    }
+
     onSubmitLogin(e) {
-        console.log("Submit log in");
         e.preventDefault();
         send_log_in_form(this.state.email, this.state.password).then((res) => {
             if (res.data === "Wrong password") {
                 this.wrongPass();
             }
+            else if (res.data === "This account doesn't exist") {
+                this.wrongMail();
+            }
             else {
+                setToken(res.data.token);
                 this.props.authenticate(res.data);
             }
         });
     }
 
     onSubmitRegister(e) {
-        console.log("Submit register");
         e.preventDefault();
         send_register_form(this.state.email, this.state.password)
             .then((res) => {
+                setToken(res.data.token);
                 this.props.authenticate(res.data);
             });
     }
