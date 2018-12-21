@@ -6,6 +6,7 @@ source env/bin/activate
 cd backend
 # If you use a virtual environment : source env/bin/activate
 pip install -r requirements.txt
+python manage.py loaddata ./fixtures/initial_data.json
 
 
 cd ../textme-app

@@ -205,9 +205,6 @@ def booking_detail(request, booking_id):
 DEBUGGING
 """
 
-def home(request) :
-    return HttpResponse("This is API home.")
-
 def reset(request) :
     users = User.objects.all()
     bookings = Booking.objects.all()
@@ -231,14 +228,3 @@ def add_kart(request) :
             return JsonResponse(serializer.data, status = 201)
         return JsonResponse(serializer.errors, status = 400)
 
-def all_users(request) :
-    if request.method == "GET" :
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        return JsonResponse(serializer.data, status=201, safe=False)
-
-def all_bookings(request) :
-    if request.method == "GET" :
-        bookings = Booking.objects.all()
-        serializer = BookingSerializer(bookings, many=True)
-        return JsonResponse(serializer.data, status=201, safe=False)

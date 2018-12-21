@@ -14,9 +14,6 @@ urlpatterns = [
     url("booking/(?P<booking_id>\d+)/", views.booking_detail),
     url("modify_book/(?P<booking_id>\d+)/", views.modify_booking),
     url("delete_book/(?P<booking_id>\d+)/", views.delete_booking),
-    url("home", views.home, name="home"),
-    url("add_kart", views.add_kart), 
-    url("test_users", views.all_users),
-    url("reset", views.reset),
-    url("all_bookings", views.all_bookings),
+    url("add_kart", views.add_kart),
+    url("reset", views.reset)
 ]
